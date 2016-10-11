@@ -41,27 +41,26 @@ namespace NatCamU {
             material = new Material(Shader.Find("Hidden/NatCam/Zoom2D"));
             originalMaterial = graphic.material;
             isActive = true;
-            Debug.Log("NatCam: Active camera "+(NatCam.ActiveCamera.IsZoomSupported ? "supports hardware optical zoom" : "does not support hardware optical zoom. Falling back to shader-accelerated digital zoom"));
+            if (NatCam.ActiveCamera != null) Debug.Log("NatCam: Active camera "+(NatCam.ActiveCamera.IsZoomSupported ? "supports hardware optical zoom" : "does not support hardware optical zoom. Falling back to shader-accelerated digital zoom"));
         }
         
         public void Update () {
-            if (isActive) {
-                zoomRatio += gestures.ZoomDelta * zoomSpeed;
-                zoomRatio = Mathf.Clamp01(zoomRatio);
-                switch (zoomMode) {
-                    case ZoomMode.DigitalZoomAsFallback:
-                        if (!NatCam.ActiveCamera.IsZoomSupported) goto case ZoomMode.ForceDigitalZoomOnly;
-                        else NatCam.ActiveCamera.ZoomRatio = zoomRatio;
-                        break;
-                    case ZoomMode.ForceDigitalZoomOnly:
-                        if (graphic.material != material) graphic.material = material;
-                        material.SetFloat("_ZoomFactor", zoomRatio);
-                        zoomOverride = true;
-                        break;
-                    case ZoomMode.ZoomSpeedOverrideOnly:
-                        ;
-                        break;
-                }
+            if (!isActive || NatCam.ActiveCamera == null) return;
+            zoomRatio += gestures.ZoomDelta * zoomSpeed;
+            zoomRatio = Mathf.Clamp01(zoomRatio);
+            switch (zoomMode) {
+                case ZoomMode.DigitalZoomAsFallback:
+                    if (!NatCam.ActiveCamera.IsZoomSupported) goto case ZoomMode.ForceDigitalZoomOnly;
+                    else NatCam.ActiveCamera.ZoomRatio = zoomRatio;
+                    break;
+                case ZoomMode.ForceDigitalZoomOnly:
+                    if (graphic.material != material) graphic.material = material;
+                    material.SetFloat("_ZoomFactor", zoomRatio);
+                    zoomOverride = true;
+                    break;
+                case ZoomMode.ZoomSpeedOverrideOnly:
+                    ;
+                    break;
             }
         }
         
