@@ -51,7 +51,7 @@ namespace NatCamU {
             switch (zoomMode) {
                 case ZoomMode.DigitalZoomAsFallback:
                     if (!NatCam.ActiveCamera.IsZoomSupported) goto case ZoomMode.ForceDigitalZoomOnly;
-                    else NatCam.ActiveCamera.ZoomRatio = zoomRatio;
+                    else if (NatCam.ActiveCamera.ZoomRatio != zoomRatio) NatCam.ActiveCamera.ZoomRatio = zoomRatio;
                     break;
                 case ZoomMode.ForceDigitalZoomOnly:
                     if (graphic.material != material) graphic.material = material;
